@@ -2,6 +2,15 @@
 
 A cross-platform desktop application backend designed for small clinics to efficiently manage patient records, medical history, prescriptions, and clinic medicine inventory. The backend supports role-based access control, JWT authentication, comprehensive audit logging, and is built with scalability and extensibility in mind.
 
+## 🚀 Quick Start
+
+**New to the project?** Check out the [Quick Start Guide](docs/QUICKSTART.md) to get up and running in minutes!
+
+📖 **Documentation:**
+- [Quick Start Guide](docs/QUICKSTART.md) - Get started quickly
+- [API Documentation](docs/API.md) - Complete API reference
+- [Project Planning](docs/planning/01.md) - Detailed project specifications
+
 ## Tech Stack
 
 - **Java 17**: Programming language

@@ -1,6 +1,7 @@
 package com.clinic.backend.infrastructure.config;
 
 import com.clinic.backend.domain.permission.model.Permission;
+import com.clinic.backend.domain.permission.repository.PermissionRepository;
 import com.clinic.backend.domain.role.model.Role;
 import com.clinic.backend.domain.role.repository.RoleRepository;
 import com.clinic.backend.domain.user.model.User;
@@ -22,6 +23,7 @@ public class DataInitializer {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
@@ -30,44 +32,40 @@ public class DataInitializer {
             if (userRepository.count() == 0) {
                 log.info("Initializing default data...");
 
-                // Create permissions
-                Permission createUser = Permission.builder()
+                // Create and save permissions first
+                Permission createUser = permissionRepository.save(Permission.builder()
                         .name("create_user")
                         .description("Permission to create users")
-                        .build();
+                        .build());
 
-                Permission editUser = Permission.builder()
+                Permission editUser = permissionRepository.save(Permission.builder()
                         .name("edit_user")
                         .description("Permission to edit users")
-                        .build();
+                        .build());
 
-                Permission viewPatient = Permission.builder()
+                Permission viewPatient = permissionRepository.save(Permission.builder()
                         .name("view_patient_detail")
                         .description("Permission to view patient details")
-                        .build();
+                        .build());
 
-                Permission createPatient = Permission.builder()
+                Permission createPatient = permissionRepository.save(Permission.builder()
                         .name("create_patient")
                         .description("Permission to create patients")
-                        .build();
+                        .build());
 
                 // Create Admin role with permissions
-                Role adminRole = Role.builder()
+                Role adminRole = roleRepository.save(Role.builder()
                         .name("ADMIN")
                         .description("Administrator role with full access")
                         .permissions(new HashSet<>(Arrays.asList(createUser, editUser, viewPatient, createPatient)))
-                        .build();
-
-                roleRepository.save(adminRole);
+                        .build());
 
                 // Create Employee role
-                Role employeeRole = Role.builder()
+                Role employeeRole = roleRepository.save(Role.builder()
                         .name("EMPLOYEE")
                         .description("Employee role with limited access")
                         .permissions(new HashSet<>(Arrays.asList(viewPatient, createPatient)))
-                        .build();
-
-                roleRepository.save(employeeRole);
+                        .build());
 
                 // Create default admin user
                 User admin = User.builder()
