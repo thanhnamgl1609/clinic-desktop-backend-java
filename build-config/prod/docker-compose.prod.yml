@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: clinic-mysql-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - clinic-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build:
+      context: ../../
+      dockerfile: build-config/prod/backend.Dockerfile
+    container_name: clinic-backend-prod
+    environment:
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      PORT: 8080
+      SHOW_SQL: "false"
+      LOG_LEVEL: INFO
+    ports:
+      - "${PORT:-8080}:8080"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+    networks:
+      - clinic-network
+    restart: always
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  clinic-network:
+    driver: bridge
